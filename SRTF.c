@@ -2,49 +2,45 @@
 #include<stdbool.h>
 #include<limits.h>
 
-typedef struct process
-{
+typedef struct process{
     int id;
     int arrival;
     int burst;
     int remaining;
     int completion;
     int turn_around_time;
-    int waiting_time;
-    int response_time;
     bool completed;
+    int waiting;
+    int response_time;
 }process;
 
-int minIndFind(process* processes, int n, int currTime){
+int findMinInd(process* processes, int n, int CurrTime){
     int ind = -1;
     int shortestTime = INT_MAX;
     for(int i = 0;i<n;++i){
-        if(processes[i].remaining < shortestTime && !processes[i].completed && processes[i].arrival <= currTime){
+        if(processes[i].remaining < shortestTime && processes[i].completed == false && processes[i].arrival <= CurrTime){
             ind = i;
             shortestTime = processes[i].remaining;
         }
     }
     return ind;
 }
-
-int main()
-{
+int main(){
     int n;
     scanf("%d",&n);
     process processes[n];
     for(int i = 0;i<n;++i){
+        printf("Enter Arrival and Burst Time: ");
+        scanf("%d%d",&processes[i].arrival, &processes[i].burst);
         processes[i].id = i + 1;
-        printf("Enter Arrival And Burst Time Of Process %d: ",i+1);
-        scanf("%d %d",&processes[i].arrival,&processes[i].burst);
-        processes[i].remaining = processes[i].burst;
         processes[i].completed = false;
         processes[i].response_time = -1;
+        processes[i].remaining = processes[i].burst;
     }
-
-    int currTime = 0;
     int totalProcesses = 0;
+    int currTime = 0;
     while(totalProcesses < n){
-        int minInd = minIndFind(processes, n, currTime);
+        int minInd = findMinInd(processes, n, currTime);
         if(minInd == -1){
             currTime++;
             continue;
@@ -54,15 +50,20 @@ int main()
         }
         processes[minInd].remaining--;
         currTime++;
+
         if(processes[minInd].remaining == 0){
             processes[minInd].completed = true;
             totalProcesses++;
             processes[minInd].completion = currTime;
-            processes[minInd].turn_around_time = processes[minInd].completion - processes[minInd].arrival;
-            processes[minInd].waiting_time = processes[minInd].turn_around_time - processes[minInd].burst; 
+            processes[minInd].turn_around_time = currTime - processes[minInd].arrival;
+            processes[minInd].waiting = processes[minInd].turn_around_time - processes[minInd].burst;
         }
     }
     for(int i = 0;i<n;++i){
-        printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n",processes[i].id,processes[i].arrival,processes[i].burst,processes[i].completion,processes[i].turn_around_time,processes[i].waiting_time,processes[i].response_time);
+        processes[i].response_time -= processes[i].arrival;
+    }
+    printf("\nPID\tAT\tBT\tCT\tTAT\tWT\tRT\n");
+    for (int i = 0; i < n; ++i) {
+        printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n", processes[i].id, processes[i].arrival, processes[i].burst, processes[i].completion, processes[i].turn_around_time, processes[i].waiting, processes[i].response_time);
     }
 }
