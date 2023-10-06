@@ -39,10 +39,14 @@ int main(){
     }
     int totalProcesses = 0;
     int currTime = 0;
+    int idleTime = 0;
+    float averageTurnAroundTime = 0;
+    float averageWaitingTime = 0;
     while(totalProcesses < n){
         int minInd = findMinInd(processes, n, currTime);
         if(minInd == -1){
             currTime++;
+            idleTime++;
             continue;
         }
         if(processes[minInd].response_time == -1){
@@ -57,13 +61,21 @@ int main(){
             processes[minInd].completion = currTime;
             processes[minInd].turn_around_time = currTime - processes[minInd].arrival;
             processes[minInd].waiting = processes[minInd].turn_around_time - processes[minInd].burst;
+            averageTurnAroundTime += processes[minInd].turn_around_time;
+            averageWaitingTime += processes[minInd].waiting;
         }
     }
-    for(int i = 0;i<n;++i){
-        processes[i].response_time -= processes[i].arrival;
-    }
+    float cpu_util = ((currTime - idleTime)/(1.0*currTime))*100;
+    averageTurnAroundTime /= (1.0*n);
+    averageWaitingTime /= (1.0*n);
+    float throughput = ((1.0)*n)/currTime;
     printf("\nPID\tAT\tBT\tCT\tTAT\tWT\tRT\n");
     for (int i = 0; i < n; ++i) {
         printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n", processes[i].id, processes[i].arrival, processes[i].burst, processes[i].completion, processes[i].turn_around_time, processes[i].waiting, processes[i].response_time);
     }
+    printf("CPU Utilization: %f\n",cpu_util);
+    printf("Idle Time: %d\n",idleTime);
+    printf("Average Turn Around Time: %f\n",averageTurnAroundTime);
+    printf("Average Waiting Time: %f\n",averageWaitingTime);
+    printf("Throughput: %f: \n",throughput);
 }

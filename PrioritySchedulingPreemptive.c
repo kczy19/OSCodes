@@ -48,6 +48,9 @@ int main(){
 
     int currTime = 0;
     int totalProcesses = 0;
+    int idleTime = 0;
+    float averageTurnAroundTime = 0;
+    float averageWaitingTime = 0;
 
     currTime++;
     processes[0].remaining--;
@@ -57,13 +60,16 @@ int main(){
         totalProcesses++;
         processes[0].completion = currTime;
         processes[0].turn_around_time = processes[0].completion - processes[0].arrival;
-        processes[0].waiting_time = processes[0].turn_around_time - processes[0].burst; 
+        processes[0].waiting_time = processes[0].turn_around_time - processes[0].burst;
+        averageTurnAroundTime += processes[0].turn_around_time;
+        averageWaitingTime += processes[0].waiting_time;  
     }
     
     while(totalProcesses < n){
         int highestPriorityInd = maxPriorityInd(processes, n, currTime);
         if(highestPriorityInd == -1){
             currTime++;
+            idleTime++;
             continue;
         }
         if(processes[highestPriorityInd].response_time == -1){
@@ -77,8 +83,14 @@ int main(){
             processes[highestPriorityInd].completion = currTime;
             processes[highestPriorityInd].turn_around_time = processes[highestPriorityInd].completion - processes[highestPriorityInd].arrival;
             processes[highestPriorityInd].waiting_time = processes[highestPriorityInd].turn_around_time - processes[highestPriorityInd].burst; 
+            averageTurnAroundTime += processes[highestPriorityInd].turn_around_time;
+            averageWaitingTime += processes[highestPriorityInd].waiting_time;
         }
     }
+    float cpu_util = ((currTime - idleTime)/(1.0*currTime))*100;
+    float throughput = ((1.0)*n)/currTime;
+    averageTurnAroundTime /= (1.0*n);
+    averageWaitingTime /= (1.0*n);
     for(int i = 0;i<n;++i){
         processes[i].response_time -= processes[i].arrival;
     }
@@ -86,5 +98,10 @@ int main(){
     for (int i = 0; i < n; ++i) {
         printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", processes[i].id, processes[i].priority,processes[i].arrival, processes[i].burst, processes[i].completion, processes[i].turn_around_time, processes[i].waiting_time, processes[i].response_time);
     }
+    printf("CPU Utilization: %f\n",cpu_util);
+    printf("Idle Time: %d\n",idleTime);
+    printf("Average Turn Around Time: %f\n",averageTurnAroundTime);
+    printf("Average Waiting Time: %f\n",averageWaitingTime);
+    printf("Throughput: %f: \n",throughput);
 }
 
