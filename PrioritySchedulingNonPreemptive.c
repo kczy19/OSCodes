@@ -68,7 +68,7 @@ int main(){
             continue;
         }
         if(processes[highestPriorityInd].response_time == -1){
-            processes[highestPriorityInd].response_time = currTime;
+            processes[highestPriorityInd].response_time -= processes[highestPriorityInd].arrival;
         }
         currTime += processes[highestPriorityInd].burst;
         processes[highestPriorityInd].completed = true;

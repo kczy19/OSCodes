@@ -50,7 +50,7 @@ int main(){
             continue;
         }
         if(processes[minInd].response_time == -1){
-            processes[minInd].response_time = currTime;
+            processes[minInd].response_time -= processes[minInd].arrival;
         }
         processes[minInd].remaining--;
         currTime++;

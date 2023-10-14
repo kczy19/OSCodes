@@ -73,7 +73,7 @@ int main(){
             continue;
         }
         if(processes[highestPriorityInd].response_time == -1){
-            processes[highestPriorityInd].response_time = currTime;
+            processes[highestPriorityInd].response_time -= processes[highestPriorityInd].arrival;
         }
         currTime++;
         processes[highestPriorityInd].remaining--;
@@ -91,9 +91,6 @@ int main(){
     float throughput = ((1.0)*n)/currTime;
     averageTurnAroundTime /= (1.0*n);
     averageWaitingTime /= (1.0*n);
-    for(int i = 0;i<n;++i){
-        processes[i].response_time -= processes[i].arrival;
-    }
     printf("\nPID\tPR\tAT\tBT\tCT\tTAT\tWT\tRT\n");
     for (int i = 0; i < n; ++i) {
         printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", processes[i].id, processes[i].priority,processes[i].arrival, processes[i].burst, processes[i].completion, processes[i].turn_around_time, processes[i].waiting_time, processes[i].response_time);
